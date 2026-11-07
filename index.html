@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Men's Day - Hoàng Thiên 💖</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti cho hiệu ứng bắn ruy băng/pháo hoa -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Fredoka (Font dễ thương như ảnh mẫu) & Playfair Display / Times New Roman -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Font chữ tùy chỉnh theo yêu cầu */
+        .font-title {
+            font-family: 'Times New Roman', Times, 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        .font-body {
+            font-family: 'Fredoka', 'Comic Neue', 'Mali', cursive, sans-serif;
+        }
+
+        /* Tông màu chữ nâu đất chủ đạo */
+        .text-brown {
+            color: #5c3d2e;
+        }
+        .bg-brown-btn {
+            background-color: #5c3d2e;
+            color: #ffffff;
+        }
+        .bg-brown-btn:hover {
+            background-color: #4a3024;
+        }
+
+        /* Custom Star Cursor (Ngôi sao vàng nhỏ) */
+        body, button, a, div {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23FFD700" stroke="%23DAA520" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>') 12 12, auto !important;
+        }
+
+        /* Nền họa tiết lặp lại từ image.png */
+        .bg-stars-pattern {
+            background-image: url('image.png');
+            background-repeat: repeat;
+            background-size: 180px auto;
+            background-color: #e0f2fe;
+        }
+
+        /* Animation cho đĩa nhạc đĩa than */
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-disc {
+            animation: spin-slow 4s linear infinite;
+        }
+        .paused {
+            animation-play-state: paused !important;
+        }
+
+        /* Hiệu ứng rung giận dỗi khi chọn sai */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Hiệu ứng nảy hộp quà nhẹ */
+        @keyframes gift-bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-12px) scale(1.05); }
+        }
+        .animate-gift {
+            animation: gift-bounce 2s ease-in-out infinite;
+        }
+
+        /* Hiệu ứng nảy lơ lửng cho các nhân vật Chiikawa */
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+        .floating {
+            animation: float-gentle 3s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar cho bức thư nếu nội dung dài */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #c4a482;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-stars-pattern font-body text-brown min-h-screen flex flex-col justify-between items-center relative overflow-x-hidden selection:bg-pink-200">
+
+    <!-- Audio Element (Audio được tích hợp trực tiếp từ file âm thanh người dùng cung cấp) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="audio.mp3" type="audio/mpeg">
+        <source src="audio.wav" type="audio/wav">
+        Trình duyệt của bạn không hỗ trợ phát âm thanh.
+    </audio>
+
+    <!-- CONTAINER CHÍNH -->
+    <main class="w-full max-w-2xl px-4 py-8 my-auto flex flex-col items-center justify-center min-h-[90vh] relative z-10">
+
+        <!-- ==================== TRANG 1: CÂU HỎI BẮT ĐẦU ==================== -->
+        <section id="page-1" class="w-full flex flex-col items-center text-center transition-all duration-500 transform">
+            <!-- Nhân vật Chiikawa trang trí trên đầu -->
+            <div class="relative mb-4 floating">
+                <img src="image_9.png" alt="Chiikawa Múa" class="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-md">
+            </div>
+
+            <!-- Khung câu hỏi -->
+            <div class="bg-white/90 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl border-4 border-sky-200 max-w-lg w-full relative">
+                <h1 class="font-title text-2xl md:text-4xl text-brown mb-6 leading-relaxed tracking-wide">
+                    Nè bạn, biết hôm nay là ngày gì hông??? 🌸
+                </h1>
+
+                <!-- Thông báo cảnh báo khi chọn đáp án sai -->
+                <div id="wrong-warning" class="hidden mb-4 p-3 bg-red-100 border-2 border-red-300 rounded-2xl text-red-600 font-bold text-lg animate-shake">
+                    Ê giỡn mặt hã? Chọn lại coi 😤🖐️
+                </div>
+
+                <!-- 2 Nút lựa chọn -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-2">
+                    <button onclick="handleWrongAnswer()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-brown font-bold text-brown bg-amber-50 hover:bg-amber-100 transition-all transform hover:scale-105 active:scale-95 shadow-md">
+                        Ụa ngày gì vậy taa 🤪
+                    </button>
+                    <button onclick="goToPage2()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-brown-btn font-bold text-white shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                        Men's Day chớ dì nữa ✨💖
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nhân vật Chiikawa nhỏ ở 2 bên góc dưới -->
+            <div class="flex justify-between w-full max-w-md mt-6 px-4">
+                <img src="image_7.png" alt="Chiikawa Tim" class="w-16 h-16 object-contain floating" style="animation-delay: 0.5s;">
+                <img src="image_8.png" alt="Thỏ Chiikawa" class="w-16 h-16 object-contain floating" style="animation-delay: 1s;">
+            </div>
+        </section>
+
+
+        <!-- ==================== TRANG 2: HỘP QUÀ BẤT NGỜ ==================== -->
+        <section id="page-2" class="hidden w-full flex flex-col items-center text-center transition-all duration-500">
+            <!-- Chữ HAPPY MEN'S DAY hoành tráng -->
+            <h1 class="font-title text-3xl md:text-5xl text-brown mb-4 tracking-wider drop-shadow-md animate-pulse">
+                🎉 HAPPY MEN’S DAY 🎉
+            </h1>
+            <p class="text-brown font-semibold text-lg md:text-xl mb-6 bg-white/70 px-4 py-1.5 rounded-full border border-sky-200">
+                Nhấp vào hộp quà bên dưới để khám phá nè! 🎁
+            </p>
+
+            <!-- Khhu vực Hộp Quà & Bìa Thư -->
+            <div class="relative min-h-[300px] w-full flex items-center justify-center">
+
+                <!-- 1. Hộp Quà (image_3.png) -->
+                <div id="gift-box-container" onclick="openGift()" class="cursor-pointer transition-all transform hover:scale-110 active:scale-95 animate-gift flex flex-col items-center">
+                    <img src="image_3.png" alt="Hộp Quà" class="w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-2xl">
+                    <span class="mt-2 text-sm font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full shadow border border-amber-300">
+                        Bấm để mở quà 💖
+                    </span>
+                </div>
+
+                <!-- Các GIF Chiikawa bắn bùng nổ khi mở quà (Ban đầu ẩn) -->
+                <div id="burst-gifs" class="hidden absolute inset-0 pointer-events-none flex items-center justify-center">
+                    <img src="image_7.png" class="absolute w-28 h-28 -top-10 -left-6 floating object-contain">
+                    <img src="image_8.png" class="absolute w-28 h-28 -top-12 -right-6 floating object-contain" style="animation-delay: 0.3s;">
+                    <img src="image_9.png" class="absolute w-32 h-32 -bottom-6 floating object-contain" style="animation-delay: 0.6s;">
+                </div>
+
+                <!-- 2. Bìa Thư "Letter for you 💖" (image_4.png) (Xuất hiện sau 5s bắn quà) -->
+                <div id="envelope-container" onclick="goToPage3()" class="hidden cursor-pointer flex-col items-center transition-all transform hover:scale-105 animate-bounce">
+                    <div class="relative w-64 h-64 md:w-72 md:h-72 flex items-center justify-center">
+                        <img src="image_4.png" alt="Bìa thư Chiikawa" class="w-full h-full object-contain drop-shadow-2xl">
+                        <div class="absolute bottom-10 bg-white/90 px-4 py-2 rounded-2xl shadow-md border border-pink-300">
+                            <p class="font-title text-xl md:text-2xl text-pink-600 font-bold tracking-wide">
+                                Letter for you 💖
+                            </p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-pink-700 bg-pink-100 px-3 py-1 rounded-full shadow border border-pink-200 mt-2">
+                        Bấm vào bìa thư để đọc thư nhé! ✉️
+                    </span>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ==================== TRANG 3: LÁ THƯ CHÚC MỪNG ==================== -->
+        <section id="page-3" class="hidden w-full flex flex-col items-center text-center transition-all duration-500">
+            <!-- Khung lá thư (Sử dụng Khung thiệp Chiikawa image_5.png) -->
+            <div class="relative w-full max-w-lg aspect-[4/3] sm:aspect-auto sm:min-h-[460px] flex items-center justify-center p-4">
+                
+                <!-- Hình nền khung thiệp image_5.png -->
+                <img src="image_5.png" alt="Khung thiệp Chiikawa" class="absolute inset-0 w-full h-full object-fill rounded-3xl shadow-2xl z-0">
+
+                <!-- Nội dung lá thư nằm trong vùng trống của khung -->
+                <div class="relative z-10 w-[82%] h-[75%] mt-6 flex flex-col items-center justify-center px-4 py-2 overflow-y-auto custom-scrollbar text-center">
+                    <h2 class="font-title text-xl md:text-2xl text-brown font-bold mb-3 border-b-2 border-pink-200 pb-1 w-full">
+                        Món quà nho nhỏ gửi đến Hoàng Thiên💖
+                    </h2>
+                    <p class="font-body text-brown text-sm sm:text-base md:text-lg leading-relaxed font-semibold">
+                        Chúc bạn luôn giữ được nụ cười tươi trên môi, hạnh phúc và gặp nhiều may mắn. Hy vọng những điều tốt đẹp nhất sẽ đến với bạn, không chỉ hôm nay mà còn trong những năm tháng sau này. Mong rằng con đường bạn đi luôn rải đầy nắng hoa, mọi giông bão đều hóa dịu dàng. Nhớ ăn ngoan, ngủ kĩ, giữ gìn sức khỏe nha bạn!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Nút quay lại hoặc gửi lời chúc -->
+            <div class="mt-6 flex gap-4">
+                <button onclick="restartExperience()" class="px-5 py-2.5 bg-white/80 hover:bg-white text-brown border-2 border-brown font-bold rounded-xl shadow-md transition-all transform hover:scale-105">
+                    🔄 Xem lại từ đầu
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ==================== NÚT BẬT / TẮT NHẠC (ĐĨA NHẠC ĐĨA THAN) ==================== -->
+    <!-- Xuất hiện từ Trang 2 ở góc dưới bên phải -->
+    <div id="music-player-widget" class="hidden fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-white/95 backdrop-blur-md p-2 pr-4 rounded-full shadow-2xl border-2 border-sky-300">
+        <!-- Đĩa nhạc xoay tròn -->
+        <button onclick="toggleMusic()" id="disc-btn" title="Bật/Tắt nhạc" class="relative w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-900 flex items-center justify-center overflow-hidden shadow-lg border-2 border-amber-300 transform active:scale-95 transition-all">
+            <!-- Đĩa than dán nhãn -->
+            <div id="disc-plate" class="w-full h-full flex items-center justify-center animate-spin-disc">
+                <div class="w-4 h-4 rounded-full bg-amber-400 border-2 border-slate-900 flex items-center justify-center">
+                    <div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
+                </div>
+            </div>
+            <!-- Biểu tượng Note nhạc trên cùng -->
+            <div class="absolute inset-0 flex items-center justify-center text-white text-xs font-bold drop-shadow">
+                🎵
+            </div>
+        </button>
+
+        <!-- Nút điều chỉnh Volume nhanh & Trạng thái -->
+        <div class="flex flex-col text-left">
+            <span id="music-status-text" class="text-xs font-bold text-brown">Đang phát 🎶</span>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8" oninput="changeVolume(this.value)" class="w-16 h-1.5 accent-amber-700 cursor-pointer">
+        </div>
+    </div>
+
+
+    <!-- SCRIPT ĐIỀU KHIỂN HOẠT ĐỘNG -->
+    <script>
+        const bgMusic = document.getElementById('bg-music');
+        const wrongWarning = document.getElementById('wrong-warning');
+        const musicWidget = document.getElementById('music-player-widget');
+        const discPlate = document.getElementById('disc-plate');
+        const musicStatusText = document.getElementById('music-status-text');
+
+        // 1. Xử lý khi bấm vào lựa chọn sai ở Trang 1
+        function handleWrongAnswer() {
+            wrongWarning.classList.remove('hidden');
+            // Reset hiệu ứng lắc
+            wrongWarning.classList.remove('animate-shake');
+            void wrongWarning.offsetWidth; // trigger reflow
+            wrongWarning.classList.add('animate-shake');
+        }
+
+        // 2. Chuyển sang Trang 2 & Bắt đầu phát nhạc
+        function goToPage2() {
+            wrongWarning.classList.add('hidden');
+            document.getElementById('page-1').classList.add('hidden');
+            document.getElementById('page-2').classList.remove('hidden');
+            
+            // Hiện widget đĩa nhạc từ trang 2
+            musicWidget.classList.remove('hidden');
+
+            // Bắt đầu phát nhạc background lặp lại
+            playMusic();
+        }
+
+        // 3. Xử lý mở Hộp Quà ở Trang 2
+        function openGift() {
+            const giftBox = document.getElementById('gift-box-container');
+            const burstGifs = document.getElementById('burst-gifs');
+            const envelope = document.getElementById('envelope-container');
+
+            // Ẩn hộp quà
+            giftBox.classList.add('hidden');
+            
+            // Hiện GIF Chiikawa bùng nổ
+            burstGifs.classList.remove('hidden');
+
+            // Bắn pháo hoa ruy băng liên tục trong 5 giây bằng canvas-confetti
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            const frame = () => {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#f472b6', '#38bdf8', '#fbbf24', '#c084fc']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#f472b6', '#38bdf8', '#fbbf24', '#c084fc']
+                });
+
+                if (Date.now() < animationEnd) {
+                    requestAnimationFrame(frame);
+                }
+            };
+            frame();
+
+            // Pháo hoa nổ giữa màn hình
+            confetti({
+                particleCount: 100,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+
+            // Sau 5 giây kết thúc hiệu ứng bắn quà -> Xuất hiện Bìa Thư
+            setTimeout(() => {
+                burstGifs.classList.add('hidden');
+                envelope.classList.remove('hidden');
+                envelope.classList.add('flex');
+            }, 5000);
+        }
+
+        // 4. Chuyển sang Trang 3 (Đọc thư)
+        function goToPage3() {
+            document.getElementById('page-2').classList.add('hidden');
+            document.getElementById('page-3').classList.remove('hidden');
+            
+            // Bắn chút tim chúc mừng khi mở thư
+            confetti({
+                particleCount: 40,
+                spread: 60,
+                origin: { y: 0.5 }
+            });
+        }
+
+        // 5. Quay lại từ đầu
+        function restartExperience() {
+            document.getElementById('page-3').classList.add('hidden');
+            document.getElementById('page-2').classList.add('hidden');
+            document.getElementById('page-1').classList.remove('hidden');
+
+            // Reset trạng thái trang 2
+            document.getElementById('gift-box-container').classList.remove('hidden');
+            document.getElementById('burst-gifs').classList.add('hidden');
+            document.getElementById('envelope-container').classList.add('hidden');
+            document.getElementById('envelope-container').classList.remove('flex');
+        }
+
+        // 6. Xử lý Âm nhạc & Đĩa quay
+        function playMusic() {
+            bgMusic.play().then(() => {
+                discPlate.classList.remove('paused');
+                musicStatusText.innerText = "Đang phát 🎶";
+            }).catch((err) => {
+                console.log("Cần tương tác người dùng để phát nhạc:", err);
+            });
+        }
+
+        function toggleMusic() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                discPlate.classList.remove('paused');
+                musicStatusText.innerText = "Đang phát 🎶";
+            } else {
+                bgMusic.pause();
+                discPlate.classList.add('paused');
+                musicStatusText.innerText = "Tạm dừng ⏸️";
+            }
+        }
+
+        function changeVolume(val) {
+            bgMusic.volume = val;
+        }
+    </script>
+</body>
+</html>
